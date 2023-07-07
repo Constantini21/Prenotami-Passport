@@ -1,0 +1,43 @@
+import { Page } from 'playwright'
+import screenshotDesktop from 'screenshot-desktop'
+
+import { RESERVA_NAV } from '../constants/locators'
+import { formatDate } from './formatDate';
+
+export const citizenshipAppointmentIsAvailable = async (
+  page: Page,
+  screenshot: { filename?: string; manualScreenshot?: boolean } = {},
+) => {
+  const path = __dirname.split('\\')
+  path.splice(path.length - 2, 2)
+  
+  try {
+    await page.locator(RESERVA_NAV).click()
+    await page.waitForLoadState('load')
+    await page.locator('#dataTableServices > tbody > tr:nth-child(2) > td:nth-child(4) > a').click()
+    await page.waitForLoadState('load')
+    const text = await page
+      .locator('.jconfirm-content > div')
+      .innerText()
+      .catch(error => '')
+
+    if (text === 'Al momento non ci sono date disponibili per il servizio richiesto') {
+      if (screenshot.filename && !screenshot.manualScreenshot) {
+        await screenshotDesktop({
+          filename: `${path.join('/')}/screenshots/${screenshot.filename}_${formatDate(new Date(), '_')}.png`,
+        })
+      } else {
+        if (screenshot.manualScreenshot) {
+          await page.waitForTimeout(1000 * 12)
+        }
+      }
+
+      await page.locator('.jconfirm-buttons > button').click()
+    }
+
+    return !(text === 'Al momento non ci sono date disponibili per il servizio richiesto')
+  } catch (error) {
+    console.error('catch an error 👀: citizenshipAppointmentIsAvailable')
+    return 'error'
+  }
+}
