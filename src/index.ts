@@ -9,7 +9,6 @@ import { telegramUsers } from './services/telegramUsers'
 
 import users from './constants/fakeUser'
 
-
 const main = async () => {
   const browser = await webkit.launch({ headless: true /* open browser */ })
 
@@ -22,7 +21,7 @@ const main = async () => {
   try {
     const page = await browser.newPage()
 
-    await auth(page, users[0].email, users[0].password)
+    await auth({ page, email: users[0].email, password: users[0].password })
 
     let loop = true
     let countError = 0
@@ -35,7 +34,9 @@ const main = async () => {
           countError++
         } else if (isAvailable) {
           for (const userId of telegramUsers) {
-            await bot.telegram.sendMessage(userId, 'Prenotami Agendamento do passporte disponível').catch()
+            await bot.telegram
+              .sendMessage(userId, 'Prenotami Agendamento do passporte disponível')
+              .catch()
             console.log('System open')
             const pageContent = await page.content()
             await fs.writeFile('passportPage.html', pageContent)
