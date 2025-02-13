@@ -6,10 +6,10 @@
   "keywords": [],
   "license": "ISC",
   "author": "constantini",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "build": "rm -fr dist && swc src -d dist",
-    "build-dev": "npm run build && node --inspect dist/index.js",
+    "build-dev": "npm run build && node --inspect dist/src/index.js",
     "dev": "rm -fr dist && nodemon --ext ts --exec \"npm run build-dev\"",
     "dev:js": "node index.js",
     "start": "nodemon --ext ts --exec \"npm run build-dev\"",
